@@ -1,0 +1,37 @@
+requiredWinstVersion >= "4.11.4.3"
+
+DefVar $UninstallProgram$
+DefVar $InstallProgram$
+DefVar $LogDir$
+DefVar $ProductId$
+DefVar $ProductName$
+DefVar $MinimumSpace$
+DefVar $InstallDir$
+DefVar $PathToExe$
+DefVar $ExitCode$
+DefVar $RegPath$
+DefVar $RegId$
+DefVar $MSVersion$
+DefVar $INST_architecture$
+DefVar $INST_SystemType$
+DefVar $CustomPostInstall$
+DefVar $CustomPostDeinstall$
+DefVar $StartMenuEntry$
+DefVar $DesktopIcon$
+
+Set $INST_SystemType$ = GetSystemType
+set $INST_architecture$ = GetProductProperty("install_architecture","system specific")
+Set $MSVersion$	 = GetMsVersionInfo
+Set $LogDir$ = "%opsiLogDir%"
+
+; ----------------------------------------------------------------
+Set $ProductId$       = "dfn_gimp"
+Set $ProductName$	= "GIMP"
+Set $MinimumSpace$    = "280 MB"
+Set $RegPath$ = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
+; ID über den die Software (Version 2.8.10) $RegPath$ zu finden ist
+Set $RegId$ = "GIMP-2_is1"
+Set $InstallProgram$ = "gimp-2.8.14-setup-1.exe"
+; ----------------------------------------------------------------
+
+include_append "section_sub_check_exitcode.opsiinc"
