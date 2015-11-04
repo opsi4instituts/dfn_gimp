@@ -3,18 +3,26 @@
 ; and published under the Terms of the General Public License.
 ; credits: http://www.opsi.org/credits/
 
-if ($MSVersion$ = "6.1")
-	if ($INST_SystemType$ = "64 Bit System") and (($INST_architecture$ = "system specific") or ($INST_architecture$ = "both") or ($INST_architecture$ = "64 only"))
-		Message "Uninstalling " + $ProductName$ + " 64 Bit..."
-		if not (GetRegistryStringValue64("[" + $RegPath$ + "\" + $RegId$ + "] UninstallString") = "")
-			Set $UninstallProgram$ = GetRegistryStringValue64("[" + $RegPath$ + "\" + $RegId$ + "] UninstallString")
-		endif		
-	else
-		Logwarning "Only tested with 64 bit version!"
-	endif
-else
-	Logwarning "Only tested with windows 7!"
-endif
+Message "Uninstalling " + $ProductName$ + " ..."
+
+Set $SearchPattern$ = $ProductName$
+; Parameter: $SearchPattern$ Suchbegriff in Registry
+Sub_search_registry64_uninstall_keys
+; Rückgabewert: $ResultList$ gefundene Einträge
+
+Switch count ($ResultList$)
+	Case "0"
+		comment "No installations of " + $SearchPattern$ + " found in $RegPathUninstall$. Nothing to do ;-)"
+	EndCase
+	Case "1"
+		Set $RegId$ = takeSTring(0, $ResultList$)
+		Set $UninstallProgram$ = GetRegistryStringValue64("[" + $RegPathUninstall$ + "\" + $RegId$ + "] UninstallString")	
+	EndCase
+	DefaultCase
+		logError "Found more than one installation! This case is not intended yet in this script! Stop now."
+		isFatalError
+	EndCase
+EndSwitch
 
 if not ( $UninstallProgram$ = "" )
     	Winbatch_uninstall
@@ -25,12 +33,6 @@ if not ( $UninstallProgram$ = "" )
 		comment "Delete common desktop icon"
 		Linkfolder_uninstall_desktopicon	
 	endif
-
-	set $StartmenuEntry$ = getProductProperty("startmenuentry","no")
-	if $StartmenuEntry$ = "yes"
-		comment "Delete common startmenu entry"
-		Linkfolder_uninstall_startmenu	
-	endif	    
 
 	comment "include custom post deinstall file"
 	set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
@@ -49,6 +51,3 @@ set_basefolder common_desktopdirectory
 set_subfolder ""
 delete_element $ProductName$
 
-[Linkfolder_uninstall_startmenu]
-set_basefolder common_programs
-delete_element $ProductName$

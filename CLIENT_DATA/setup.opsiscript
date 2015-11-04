@@ -13,53 +13,51 @@ if not(HasMinimumSpace ("%SystemDrive%", $MinimumSpace$))
 	isFatalError
 	; Stop process and set installation status to failed
 else
+	comment "Show product picture"
+	ShowBitmap "%ScriptPath%\" + $ProductId$ + ".png" $ProductName$
+	
 	if FileExists("%ScriptPath%\delsub.opsiscript")
 		comment "Start uninstall sub section"
 		Sub "%ScriptPath%\delsub.opsiscript"
 	endif
+	
+	Message "Installing %installingProdName% (%installingProdVersion%)..."	
 
-	if ($MSVersion$ = "6.1")
-		if ($INST_SystemType$ = "64 Bit System") and (($INST_architecture$ = "system specific") or ($INST_architecture$ = "both") or ($INST_architecture$ = "64 only"))
-			Message "Installing " + $ProductName$ + " 64 Bit..."
-			comment "Start setup program"
-			Winbatch_install
-			Sub_check_exitcode
-			
-			if (GetRegistryStringValue64("[" + $RegPath$ + "\" + $RegId$ + "] DisplayIcon") = "")
-				logError "Fatal: After Installation " + $RegPath$ + "\" + $RegId$ + "] not found"
-				isFatalError
-			else
-				comment "Successful Installation"
-				comment "Get 'DisplayIcon' from registry for path to exe"
-				Set $PathToExe$ = GetRegistryStringValue64("[" + $RegPath$ + "\" + $RegId$ + "] DisplayIcon")
-				
-				set $DesktopIcon$ = getProductProperty("desktopicon","no")
-				if $DesktopIcon$ = "yes"
-					comment "Create common desktop icon"
-					Linkfolder_install_desktopicon	
-				endif
+	comment "Start setup program"
+	Winbatch_install
+	Sub_check_exitcode
 
-				set $StartmenuEntry$ = getProductProperty("startmenuentry","no")
-				if $StartmenuEntry$ = "no"
-					comment "Create common startmenu entry"
-					Linkfolder_install_startmenu	
-				endif
+	Set $SearchPattern$ = $ProductName$
+	; Parameter: $SearchPattern$ Suchbegriff in Registry
+	Sub_search_registry32_uninstall_keys
+	; Rückgabewert: $ResultList$ gefundene Einträge
 
-				comment "include custom post install file"
-				set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
-				if not ($CustomPostInstall$ = "none")
-					if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
-						include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
-					endif
+	Switch count ($ResultList$)
+		Case "0"
+			logError "Fatal: After Installation " + $ProductName$ + " could not be found in " + $RegPathUninstall$
+			isFatalError
+		EndCase
+		Case "1"
+			comment "Successful Installation"
+			comment "Get 'DisplayIcon' from registry for path to exe"
+			Set $RegId$ = takeSTring(0, $ResultList$)
+			Set $PathToExe$ = GetRegistryStringValue64("[" + $RegPathUninstall$ + "\" + $RegId$ + "] DisplayIcon")
+
+			set $DesktopIcon$ = getProductProperty("desktopicon","no")
+			if $DesktopIcon$ = "yes"
+				comment "Create common desktop icon"
+				Linkfolder_install_desktopicon	
+			endif
+
+			comment "include custom post install file"
+			set $CustomPostInstall$ = getProductProperty("custom-post-install","none")
+			if not ($CustomPostInstall$ = "none")
+				if FileExists("%ScriptPath%\custom\" + $CustomPostInstall$)
+					include_insert "%ScriptPath%\custom\" + $CustomPostInstall$
 				endif
-			endif			
-			
-		else
-			Logwarning "Only tested with 64 bit version!"
-		endif
-	else
-		Logwarning "Only tested with windows 7!"
-	endif
+			endif
+		EndCase
+	EndSwitch
 endif
 
 [Winbatch_install]
@@ -73,8 +71,4 @@ set_link
  	name: $ProductName$
  	target: $PathToExe$
 end_link
-
-[Linkfolder_install_startmenu]
-set_basefolder common_programs
-delete_element $ProductName$
 
