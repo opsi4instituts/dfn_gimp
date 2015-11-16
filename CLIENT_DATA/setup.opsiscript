@@ -29,7 +29,7 @@ else
 
 	Set $SearchPattern$ = $ProductName$
 	; Parameter: $SearchPattern$ Suchbegriff in Registry
-	Sub_search_registry32_uninstall_keys
+	Sub_search_registry64_uninstall_keys
 	; Rückgabewert: $ResultList$ gefundene Einträge
 
 	Switch count ($ResultList$)

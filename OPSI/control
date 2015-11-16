@@ -1,5 +1,5 @@
 [Package]
-version: 2
+version: 3
 depends: 
 incremental: False
 
@@ -58,6 +58,11 @@ values: ["none", "post-deinstall.opsiinc"]
 default: ["none"]
 
 [Changelog]
+dfn_gimp (2.8.14-3)
+	* Bugfix
+	* Test unter win10-x64 erfolgreich
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 16.11.2015
+
 dfn_gimp (2.8.14-2)
 	* Installation auch auf nicht win7-x64
 	* $ProductId$ wieder ohne 'dfn_'
@@ -68,6 +73,7 @@ dfn_gimp (2.8.14-2)
 gimp (2.8.14-1)
 	* initiales dfn_gimp paket
  -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 24.06.2015
+
 
 
 
