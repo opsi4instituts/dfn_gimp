@@ -30,7 +30,7 @@ Set $ProductId$       = "gimp"
 Set $ProductName$	= "GIMP"
 Set $MinimumSpace$    = "280 MB"
 Set $RegPathUninstall$ = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-Set $InstallProgram$ = "gimp-2.8.14-setup-1.exe"
+Set $InstallProgram$ = "gimp-2.8.16-setup.exe"
 ; ----------------------------------------------------------------
 
 include_append "section_sub_check_exitcode.opsiinc"
