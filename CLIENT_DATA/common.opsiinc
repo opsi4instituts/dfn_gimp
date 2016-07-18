@@ -5,6 +5,7 @@ DefVar $InstallProgram$
 DefVar $LogDir$
 DefVar $ProductId$
 DefVar $ProductName$
+DefVar $ProductVersion$
 DefVar $MinimumSpace$
 DefVar $InstallDir$
 DefVar $PathToExe$
@@ -25,12 +26,14 @@ set $INST_architecture$ = GetProductProperty("install_architecture","system spec
 Set $MSVersion$	 = GetMsVersionInfo
 Set $LogDir$ = "%opsiLogDir%"
 
+Set $ProductVersion$ = takestring (0, splitString("%installingProdVersion%", "-"))
+
 ; ----------------------------------------------------------------
 Set $ProductId$       = "gimp"
 Set $ProductName$	= "GIMP"
 Set $MinimumSpace$    = "280 MB"
 Set $RegPathUninstall$ = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-Set $InstallProgram$ = "gimp-2.8.16-setup.exe"
+Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup.exe"
 ; ----------------------------------------------------------------
 
 include_append "section_sub_check_exitcode.opsiinc"

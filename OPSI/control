@@ -1,5 +1,5 @@
 [Package]
-version: 3
+version: 1
 depends: 
 incremental: False
 
@@ -9,7 +9,7 @@ id: dfn_gimp
 name: GIMP
 description: Bildbearbeitungsprogramm (Gnu Image Manipulation Program, GIMP) mit umfangreichen Werkzeugen, Effekten und Filtern
 advice: 
-version: 2.8.16
+version: 2.8.18
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -58,6 +58,12 @@ values: ["none", "post-deinstall.opsiinc"]
 default: ["none"]
 
 [Changelog]
+dfn_gimp (2.8.18-1)
+	* neue Upstreamversion
+	* $ProductVersion$ für $InstallProgramm$-Automatik hinzugefügt
+	* Umstellung auf o4i-Logo
+ -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 18.07.2016
+
 dfn_gimp (2.8.16-3)
 	* neue Upstreamversion
  -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 30.11.2015
@@ -77,6 +83,10 @@ dfn_gimp (2.8.14-2)
 gimp (2.8.14-1)
 	* initiales dfn_gimp paket
  -- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 24.06.2015
+
+
+
+
 
 
 
