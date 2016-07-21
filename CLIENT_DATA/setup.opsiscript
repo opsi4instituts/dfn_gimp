@@ -20,7 +20,7 @@ else
 		comment "Start uninstall sub section"
 		Sub "%ScriptPath%\delsub.opsiscript"
 	endif
-	
+
 	Message "Installing %installingProdName% (%installingProdVersion%)..."	
 
 	comment "Start setup program"
@@ -29,7 +29,7 @@ else
 
 	Set $SearchPattern$ = $ProductName$
 	; Parameter: $SearchPattern$ Suchbegriff in Registry
-	Sub_search_registry64_uninstall_keys
+	Sub_search_registry3264_uninstall_keys
 	; Rückgabewert: $ResultList$ gefundene Einträge
 
 	Switch count ($ResultList$)
@@ -41,7 +41,7 @@ else
 			comment "Successful Installation"
 			comment "Get 'DisplayIcon' from registry for path to exe"
 			Set $RegId$ = takeSTring(0, $ResultList$)
-			Set $PathToExe$ = GetRegistryStringValue64("[" + $RegPathUninstall$ + "\" + $RegId$ + "] DisplayIcon")
+			Set $PathToExe$ = GetRegistryStringValueSysNative("[" + $RegPathUninstall$ + "\" + $RegId$ + "] DisplayIcon")
 
 			set $DesktopIcon$ = getProductProperty("desktopicon","no")
 			if $DesktopIcon$ = "yes"

@@ -7,7 +7,7 @@ Message "Uninstalling " + $ProductName$ + " ..."
 
 Set $SearchPattern$ = $ProductName$
 ; Parameter: $SearchPattern$ Suchbegriff in Registry
-Sub_search_registry64_uninstall_keys
+Sub_search_registry3264_uninstall_keys
 ; Rückgabewert: $ResultList$ gefundene Einträge
 
 Switch count ($ResultList$)
@@ -16,7 +16,7 @@ Switch count ($ResultList$)
 	EndCase
 	Case "1"
 		Set $RegId$ = takeSTring(0, $ResultList$)
-		Set $UninstallProgram$ = GetRegistryStringValue64("[" + $RegPathUninstall$ + "\" + $RegId$ + "] UninstallString")	
+		Set $UninstallProgram$ = GetRegistryStringValueSysNative("[" + $RegPathUninstall$ + "\" + $RegId$ + "] UninstallString")	
 	EndCase
 	DefaultCase
 		logError "Found more than one installation! This case is not intended yet in this script! Stop now."
