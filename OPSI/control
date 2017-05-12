@@ -9,7 +9,7 @@ id: dfn_gimp
 name: GIMP
 description: Bildbearbeitungsprogramm (Gnu Image Manipulation Program, GIMP) mit umfangreichen Werkzeugen, Effekten und Filtern
 advice: 
-version: 2.8.20
+version: 2.8.22
 priority: 0
 licenseRequired: False
 productClasses: 
@@ -49,6 +49,10 @@ values: ["none", "post-deinstall.opsiinc"]
 default: ["none"]
 
 [Changelog]
+dfn_gimp (2.8.22-1)
+	* neue Upstreamversion (Bugfixes)
+-- Thomas Besser (archIT/KIT) <thomas.besser@kit.edu>, 12.05.2017
+
 dfn_gimp (2.8.20-1)
 	* neue Upstreamversion
 	* o4i-Logo aktualisiert
