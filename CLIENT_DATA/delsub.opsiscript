@@ -1,41 +1,48 @@
 Message "Uninstalling " + $ProductName$ + " ..."
 
-Set $SearchPattern$ = $ProductName$
-; Parameter: $SearchPattern$ Suchbegriff in Registry
-Sub_search_registry3264_uninstall_keys
-; Rückgabewert: $ResultList$ gefundene Einträge
+; Ergebnis ist StringList (mehrere Einträge möglich);
+; in einer Zeile werden drei Ergebnisse mit "|" abgetrennt geliefert: Registrykey (mit Pfad) | Bereich Registry (kann direkt getRegistryValue übergeben werden | DisplayName
+; z.B. HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Test64|64bit|Test Registry Entry64
+Set $ResultList$ = SearchRegistryUninstallKeys($ProductName$)
 
 Switch count ($ResultList$)
 	Case "0"
-		comment "No installations of " + $SearchPattern$ + " found in $RegPathUninstall$. Nothing to do ;-)"
+		comment "No installations of " + $ProductName$ + " found in Registry. Nothing to do ;-)"
 	EndCase
 	Case "1"
-		Set $RegId$ = takeSTring(0, $ResultList$)
-		Set $UninstallProgram$ = GetRegistryStringValueSysNative("[" + $RegPathUninstall$ + "\" + $RegId$ + "] UninstallString")	
+		Set $RegId$ = takeString (0,splitString(takeString(0,$ResultList$), '|'))
+		Set $RegBitScope$ = takeString (1,splitString(takeString(0,$ResultList$), '|'))
+
+		Set $UninstallProgram$ = GetRegistryValue($RegId$, "UninstallString", $RegBitScope$)
+		if not (FileExists($UninstallProgram$))
+			LogError "Suspicious! Found entry of installer in Registry, but $UninstallProgramm$ does not exist!?"
+			isFatalError
+		endif
+
+		Winbatch_uninstall
+		Set $ExitCode$ = getLastExitCode
+		if stringToBool(isInnoExitcodeFatal($ExitCode$, "True", $ErrorString$))
+        	isFatalError
+        endif
+
+		if $DesktopLink$ = "true"
+			comment "Delete common desktop link"
+			Linkfolder_delete_desktoplink	
+		endif
+
+		comment "include custom post deinstall file"
+		set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
+		if not ($CustomPostDeinstall$ = "none")
+			if FileExists("%ScriptPath%\custom\" + $CustomPostDeinstall$)
+				include_insert "%ScriptPath%\custom\" + $CustomPostDeinstall$
+			endif
+		endif
 	EndCase
 	DefaultCase
 		logError "Found more than one installation! This case is not intended yet in this script! Stop now."
 		isFatalError
 	EndCase
 EndSwitch
-
-if not ( $UninstallProgram$ = "" )
-    Winbatch_uninstall
-    sub_check_exitcode
-
-	if $DesktopLink$ = "true"
-		comment "Delete common desktop link"
-		Linkfolder_delete_desktoplink	
-	endif
-
-	comment "include custom post deinstall file"
-	set $CustomPostDeinstall$ = getProductProperty("custom-post-deinstall","none")
-	if not ($CustomPostDeinstall$ = "none")
-		if FileExists("%ScriptPath%\custom\" + $CustomPostDeinstall$)
-			include_insert "%ScriptPath%\custom\" + $CustomPostDeinstall$
-		endif
-	endif
-endif
 
 [Winbatch_uninstall]
 $UninstallProgram$ /VERYSILENT

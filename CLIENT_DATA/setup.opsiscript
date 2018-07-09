@@ -17,23 +17,34 @@ else
 
 	comment "Start setup program"
 	Winbatch_install
-	Sub_check_exitcode
-
-	Set $SearchPattern$ = $ProductName$
-	; Parameter: $SearchPattern$ Suchbegriff in Registry
-	Sub_search_registry3264_uninstall_keys
-	; Rückgabewert: $ResultList$ gefundene Einträge
+	Set $ExitCode$ = getLastExitCode
+	if stringToBool(isInnoExitcodeFatal($ExitCode$, "True", $ErrorString$))
+		isFatalError
+    endif	
+    ; Ergebnis ist StringList (mehrere Einträge möglich);
+    ; in einer Zeile werden drei Ergebnisse mit "|" abgetrennt geliefert: Registrykey (mit Pfad) | Bereich Registry (kann direkt getRegistryValue übergeben werden | DisplayName
+    ; z.B. HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Test64|64bit|Test Registry Entry64
+    Set $ResultList$ = SearchRegistryUninstallKeys($ProductName$)
 
 	Switch count ($ResultList$)
 		Case "0"
-			logError "Fatal: After Installation " + $ProductName$ + " could not be found in " + $RegPathUninstall$
+			logError "Fatal: After Installation " + $ProductName$ + " could not be found in registry"
 			isFatalError
 		EndCase
 		Case "1"
 			comment "Successful Installation"
+			Set $RegId$ = takeString (0,splitString(takeString(0,$ResultList$), '|'))
+			Set $RegBitScope$ = takeString (1,splitString(takeString(0,$ResultList$), '|'))
+
 			comment "Get 'DisplayIcon' from registry for path to exe"
-			Set $RegId$ = takeSTring(0, $ResultList$)
-			Set $PathToExe$ = GetRegistryStringValueSysNative("[" + $RegPathUninstall$ + "\" + $RegId$ + "] DisplayIcon")
+			Set $PathToExe$ = GetRegistryValue($RegId$, "DisplayIcon", $RegBitScope$)
+			
+			comment "Check version"
+			Set $InstalledVersion$ = GetRegistryValue($RegId$, "DisplayVersion", $RegBitScope$)
+			if not (contains($InstalledVersion$, $ProductVersion$))
+				LogError "Wrong version number found, something went wrong."
+				isFatalError
+			endif		
 
 			if $DesktopLink$ = "true"
 				comment "Create common desktop link"

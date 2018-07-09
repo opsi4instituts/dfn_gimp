@@ -1,4 +1,4 @@
-requiredWinstVersion >= "4.11.4.3"
+requiredWinstVersion >= "4.12.0.16"
 
 DefVar $UninstallProgram$
 DefVar $InstallProgram$
@@ -6,15 +6,15 @@ DefVar $LogDir$
 DefVar $ProductId$
 DefVar $ProductName$
 DefVar $ProductVersion$
+DefVar $InstalledVersion$
 DefVar $MinimumSpace$
 DefVar $InstallDir$
 DefVar $PathToExe$
 DefVar $ExitCode$
-DefVar $RegPathUninstall$
+DefVar $ErrorString$
 DefVar $RegId$
+DefVar $RegBitScope$
 DefVar $MSVersion$
-DefVar $INST_architecture$
-DefVar $INST_SystemType$
 DefVar $CustomPostInstall$
 DefVar $CustomPostDeinstall$
 DefVar $DesktopLink$
@@ -22,7 +22,6 @@ DefVar $SearchPattern$
 DefStringList $ResultList$
 DefVar $PathToCmd$
 
-Set $INST_SystemType$ = GetSystemType
 Set $MSVersion$	 = GetMsVersionInfo
 Set $LogDir$ = "%opsiLogDir%"
 
@@ -33,12 +32,13 @@ Set $DesktopLink$ = getProductProperty("desktop-link","false")
 Set $ProductId$       = "gimp"
 Set $ProductName$	= "GIMP"
 Set $MinimumSpace$    = "640 MB"
-Set $RegPathUninstall$ = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
-Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup.exe"
+Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup-1.exe"
 ; ----------------------------------------------------------------
 
-include_append "section_sub_check_exitcode.opsiinc"
-include_append "section_sub_search_registry3264_uninstall_keys.opsiinc"
+; exitcode library von UIB (siehe C:\program files(x86)\opsi.org\opsi-client-agent\opsi-winst\lib) mit 'local functions'
+importLib "uib_exitcode.opsiscript::isInnoExitcodeFatal"
+; Library registry search uninstall keys (local functions)
+importLib "func_search_registry_uninstall_keys.opsiinc"
 
 if not ($MSVersion$ = "6.1" OR $MSVersion$ = "10.0")
 	Logwarning "Only tested with windows 7 and 10! Please report to the maintainer successful installation on other windows versions."		
