@@ -31,8 +31,8 @@ Set $DesktopLink$ = getProductProperty("desktop-link","false")
 ; ----------------------------------------------------------------
 Set $ProductId$       = "gimp"
 Set $ProductName$	= "GIMP"
-Set $MinimumSpace$    = "640 MB"
-Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup-1.exe"
+Set $MinimumSpace$    = "980 MB"
+Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup.exe"
 ; ----------------------------------------------------------------
 
 ; exitcode library von UIB (siehe C:\program files(x86)\opsi.org\opsi-client-agent\opsi-winst\lib) mit 'local functions'
