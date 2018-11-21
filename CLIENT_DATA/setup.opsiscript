@@ -20,11 +20,12 @@ else
 	Set $ExitCode$ = getLastExitCode
 	if stringToBool(isInnoExitcodeFatal($ExitCode$, "True", $ErrorString$))
 		isFatalError
-    endif	
-    ; Ergebnis ist StringList (mehrere Einträge möglich);
-    ; in einer Zeile werden drei Ergebnisse mit "|" abgetrennt geliefert: Registrykey (mit Pfad) | Bereich Registry (kann direkt getRegistryValue übergeben werden | DisplayName
-    ; z.B. HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Test64|64bit|Test Registry Entry64
-    Set $ResultList$ = SearchRegistryUninstallKeys($ProductName$)
+	endif
+
+	; Ergebnis ist StringList (mehrere Einträge möglich);
+	; in einer Zeile werden drei Ergebnisse mit "|" abgetrennt geliefert: Registrykey (mit Pfad) | Bereich Registry (kann direkt getRegistryValue übergeben werden | DisplayName
+	; z.B. HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Test64|64bit|Test Registry Entry64
+	Set $ResultList$ = SearchRegistryUninstallKeys($ProductName$)
 
 	Switch count ($ResultList$)
 		Case "0"
@@ -41,7 +42,7 @@ else
 			
 			comment "Check version"
 			Set $InstalledVersion$ = GetRegistryValue($RegId$, "DisplayVersion", $RegBitScope$)
-			if not (contains($InstalledVersion$, $ProductVersion$))
+			if not ($InstalledVersion$ = $ProductVersion$)
 				LogError "Wrong version number found, something went wrong."
 				isFatalError
 			endif		

@@ -6,6 +6,7 @@ DefVar $LogDir$
 DefVar $ProductId$
 DefVar $ProductName$
 DefVar $ProductVersion$
+DefVar $InstallerVersion$
 DefVar $InstalledVersion$
 DefVar $MinimumSpace$
 DefVar $InstallDir$
@@ -26,14 +27,27 @@ Set $MSVersion$	 = GetMsVersionInfo
 Set $LogDir$ = "%opsiLogDir%"
 
 Set $ProductVersion$ = takestring (0, splitString("%installingProdVersion%", "-"))
+; jetzt vierteilig, z.B. "2.10.8.2, die ersten drei entsprechen der offiziellen Version, die vierte für Änderungen am Installer, siehe $InstallProgram$ unten
+Set $InstallerVersion$ = takestring (3, splitString($ProductVersion$, "."))
+if $InstallerVersion$ = "0"
+	Set $InstallerVersion$ = ""
+else
+	Set $InstallerVersion$ = "-" + $InstallerVersion$
+endif
+Set $ProductVersion$ = takestring (0, splitString($ProductVersion$, ".")) + "." + takestring (1, splitString($ProductVersion$, ".")) + "." + takestring (2, splitString($ProductVersion$, "."))
 Set $DesktopLink$ = getProductProperty("desktop-link","false")
 
 ; ----------------------------------------------------------------
 Set $ProductId$       = "gimp"
 Set $ProductName$	= "GIMP"
 Set $MinimumSpace$    = "980 MB"
-Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup.exe"
+Set $InstallProgram$ = "gimp-"+$ProductVersion$+"-setup" + $InstallerVersion$ + ".exe"
 ; ----------------------------------------------------------------
+
+if not (FileExists("%ScriptPath%\" + $InstallProgram$))
+	LogError "Installer not found, file '" + $InstallProgram$ + "' does not exist"
+	isFatalError
+endif
 
 ; exitcode library von UIB (siehe C:\program files(x86)\opsi.org\opsi-client-agent\opsi-winst\lib) mit 'local functions'
 importLib "uib_exitcode.opsiscript::isInnoExitcodeFatal"
